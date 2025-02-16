@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica', sans-serif;
+            background: linear-gradient(45deg, #000 0%, #333 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .login-container {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #fff;
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            transform: perspective(1000px) rotateX(10deg);
+            opacity: 0;
+            animation: fadeInRotate 1s ease-out forwards;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h2::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #fff;
+            animation: underline 1.5s ease-out forwards;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            transform: translateX(20px);
+            opacity: 0;
+            animation: slideInLabel 0.7s ease-out forwards;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #555;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInInput 0.7s ease-out forwards;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInButton 0.7s ease-out forwards;
+        }
+
+        button:hover {
+            background: #ccc;
+            transform: scale(1.05);
+        }
+
+        #responseMessage {
+            text-align: center;
+            margin-top: 15px;
+            color: #fff;
+            opacity: 0;
+            animation: fadeIn 0.7s ease-out forwards;
+        }
+
+        @keyframes fadeInRotate {
+            from {
+                opacity: 0;
+                transform: perspective(1000px) rotateX(30deg) translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: perspective(1000px) rotateX(0) translateY(0);
+            }
+        }
+
+        @keyframes underline {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes slideInLabel {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInInput {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInButton {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2> Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Login</button>
+            </div>
+        </form>
+        <div id="responseMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const loginData = {
+                username: username,
+                password: password
+            };
+
+            try {
+                const response = await fetch("http://localhost:8080/cab/api/customers/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                const result = await response.json();
+                console.log('Login response:', result); // See what we get from backend
+
+                const responseMessage = document.getElementById("responseMessage");
+
+                if (response.ok) {
+                	sessionStorage.setItem("username", result.username);
+                	// Assuming you get the customerId after login
+                if (result.id) {
+                  sessionStorage.setItem("customerId", result.id);
+                      } else {
+                       sessionStorage.removeItem("customerId"); // Remove if not needed
+                 }
+
+
+                    responseMessage.textContent = result.message;
+                    responseMessage.style.color = "#fff";
+                    setTimeout(() => window.location.href = result.redirect, 1500);
+                } else {
+                    responseMessage.textContent = result.error;
+                    responseMessage.style.color = "#fff";
+                }
+            } catch (error) {
+                const responseMessage = document.getElementById("responseMessage");
+                responseMessage.textContent = "Network error occurred.";
+                responseMessage.style.color = "#fff";
+            }
+        });
+    </script>
+</body>
+</html>
