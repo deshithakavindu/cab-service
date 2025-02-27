@@ -459,6 +459,8 @@
                 const result = await response.json();
                 if (response.status === 201) {
                     alert('Booking created successfully! Booking ID: ' + result.bookingId);
+                    sessionStorage.setItem('bookingId', result.bookingId);
+                    window.location.href = 'Invoice.html';
                 } else {
                     alert('Error: ' + result.error);
                 }

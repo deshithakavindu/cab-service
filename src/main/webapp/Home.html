@@ -106,6 +106,96 @@ if (!sessionStorage.getItem("username")) {
             background: rgba(255,255,255,0.1);
         }
 
+        /* New Services Section Styles */
+        .services-section {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            animation: fadeInPage 1s ease-out;
+        }
+
+        .services-text {
+            flex: 1;
+            min-width: 300px;
+            padding: 10px;
+        }
+
+        .services-text h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .services-text h2::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 50px;
+            height: 2px;
+            background: var(--text-primary);
+            animation: expandLine 0.8s ease-out forwards;
+        }
+
+        .services-text p {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .services-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .services-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            animation: typewriter 0.5s ease forwards;
+        }
+
+        .services-list li:nth-child(1) { animation-delay: 0.2s; }
+        .services-list li:nth-child(2) { animation-delay: 0.4s; }
+        .services-list li:nth-child(3) { animation-delay: 0.6s; }
+
+        .services-list li::before {
+            content: '✔';
+            color: #00cc00;
+            font-size: 1.2em;
+        }
+
+        .services-image {
+            flex: 1;
+            min-width: 300px;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .services-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .services-image img:hover {
+            transform: scale(1.05);
+        }
+
         main {
             background: var(--bg-secondary);
             border: 2px solid rgba(255,255,255,0.2);
@@ -199,12 +289,20 @@ if (!sessionStorage.getItem("username")) {
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .services-section {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <header>
-            <h1>Welcome to Mega city cab service</h1>
+            <h1>Welcome to Mega City Cab Service</h1>
             <nav>
                 <ul>
                     <li><a href="Home.html">Home</a></li>
@@ -215,18 +313,34 @@ if (!sessionStorage.getItem("username")) {
             </nav>
         </header>
 
+        <!-- New Services Section -->
+        <section class="services-section">
+            <div class="services-text">
+                <h2>Why Choose Mega City Cab?</h2>
+                <p>Reliable, fast, and affordable cab services tailored to your needs. Whether you're heading to work, the airport, or exploring the city, we've got you covered.</p>
+                <ul class="services-list">
+                    <li>24/7 Availability</li>
+                    <li>Professional Drivers</li>
+                    <li>Competitive Pricing</li>
+                </ul>
+            </div>
+            <div class="services-image">
+                <img src="https://via.placeholder.com/500x300?text=Cab+Service" alt="Mega City Cab">
+            </div>
+        </section>
+
         <main>
             <h2>Hello, <span id="username"></span>!</h2>
         </main>
 
         <footer>
-            <p>&copy; 2025 Cab Booking Service. All Rights Reserved.</p>
+            <p>© 2025 Cab Booking Service. All Rights Reserved.</p>
         </footer>
     </div>
 
     <script>
         const username = sessionStorage.getItem("username");
-       const id= sessionStorage.getItem("customerId"); // Store the customer ID in sessionStorage
+        const id = sessionStorage.getItem("customerId");
 
         if (username) {
             document.getElementById("username").textContent = username;
@@ -239,12 +353,7 @@ if (!sessionStorage.getItem("username")) {
             const confirmLogout = confirm("Do you want to log out?");
             if (confirmLogout) {
                 sessionStorage.removeItem("username");
-
-                window.location.href = "login.html";
-            }
-            if (confirmLogout) {
                 sessionStorage.removeItem("customerId");
-
                 window.location.href = "login.html";
             }
         });

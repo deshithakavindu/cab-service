@@ -108,6 +108,36 @@ public class BookingController {
         }
     }
 
+    
+    @GET
+    @Path("/customer/{customerId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @CrossOrigin
+    public Response getBookingsByCustomerId(@PathParam("customerId") int customerId) {
+        try {
+            List<Booking> bookings = bookingService.getBookingsByCustomerId(customerId);
+            if (bookings != null && !bookings.isEmpty()) {
+                return Response.ok(gson.toJson(bookings)).build();
+            } else if (bookings != null && bookings.isEmpty()) {
+                return Response.status(Response.Status.OK)
+                        .entity(gson.toJson(Map.of("message", "No bookings ")))
+                        .build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(gson.toJson(Map.of("error", "Unable to retrieve bookings for customer ID: " + customerId)))
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(gson.toJson(Map.of("error", "Unexpected error: " + e.getMessage())))
+                    .build();
+        }
+    }
+    
+    
+    
+    
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +25,7 @@
         }
 
         .login-container {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border: 2px solid #fff;
             border-radius: 15px;
             padding: 40px;
@@ -75,7 +75,7 @@
             width: 100%;
             padding: 12px;
             border: 1px solid #555;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             color: #fff;
             border-radius: 5px;
             transition: all 0.3s ease;
@@ -87,7 +87,7 @@
         input:focus {
             outline: none;
             border-color: #fff;
-            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
         button {
@@ -170,11 +170,29 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        .contact-admin {
+            margin-top: 20px;
+            font-size: 16px;
+            color: white;
+                        justify-content: center;
+            
+             /* Darker text color */
+        }
+        
+        .contact-admin a {
+            color: white; /* Link color */
+            text-decoration: none; /* Remove underline */
+        }
+
+        .contact-admin a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <h2> Login</h2>
+        <h2>Login</h2>
         <form id="loginForm">
             <div class="form-group">
                 <label for="username">Username</label>
@@ -189,7 +207,13 @@
             </div>
         </form>
         <div id="responseMessage"></div>
+        <p class="contact-admin">Contact admin:  
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=admin@gmail.com&su=Support Request&body=Hello, I need help with..." target="_blank">
+                admin@gmail.com
+            </a>
+        </p>
     </div>
+
 
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function(event) {

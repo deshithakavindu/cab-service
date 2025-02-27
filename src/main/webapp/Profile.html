@@ -1,10 +1,408 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #000;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.1);
+            border: 1px solid #fff;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-in-out;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #444;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
+        }
+        .booking-list {
+            margin-top: 20px;
+        }
+        .booking-card {
+            background: #262626;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #444;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease-in-out;
+            transition: all 0.3s ease;
+        }
+        .booking-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+            border-color: #666;
+        }
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+        }
+        .booking-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #0f0;
+            color: #000;
+        }
+        .booking-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        .detail-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            font-weight: bold;
+        }
+        .journey-path {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 8px;
+        }
+        .location {
+            flex: 1;
+        }
+        .journey-line {
+            flex: 2;
+            height: 2px;
+            background: linear-gradient(to right, #fff, #fff);
+            position: relative;
+            margin: 0 10px;
+        }
+        .journey-line:after {
+            content: '→';
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            color: #fff;
+            font-size: 20px;
+        }
+        .error-message {
+            color: #ff4d4d;
+            text-align: center;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .btn-custom {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+        .btn-custom:hover {
+            background: #666;
+        }
+        .btn-logout {
+            background: #ff4d4d;
+            color: #fff;
+        }
+        .btn-logout:hover {
+            background: #ff3333;
+        }
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background: #262626;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #666;
+        }
+        .driver-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .driver-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <h3 id="customerName">Loading...</h3>
+                </div>
+            </div>
+            <div>
+                <button class="btn-custom btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
 
+        <!-- Booking History Section -->
+        <h2><i class="fas fa-history"></i> Your Booking History</h2>
+        <div id="bookingList" class="booking-list"></div>
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Global variables
+        const customerId = sessionStorage.getItem("customerId");
+        let allBookings = [];
+        let customerData = {};
+
+        // Redirect to login if no customerId
+        if (!customerId) {
+            window.location.href = "login.html";
+        }
+
+        // Fetch profile and booking history when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchProfileDetails();
+            fetchBookingHistory();
+        });
+
+        // Fetch customer profile details
+        function fetchProfileDetails() {
+            fetch(`http://localhost:8080/cab/api/customers/${customerId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch profile');
+                    return response.json();
+                })
+                .then(customer => {
+                    customerData = customer;
+                    document.getElementById("customerName").textContent = customer.name || "User";
+                })
+                .catch(error => {
+                    console.error("Profile Error:", error);
+                    document.getElementById("errorMessage").textContent = "Unable to load profile: " + error.message;
+                    document.getElementById("errorMessage").style.display = "block";
+                    
+                    // Set default for demo
+                    document.getElementById("customerName").textContent = "Demo User";
+                });
+        }
+
+        // Fetch booking history
+        function fetchBookingHistory() {
+            const bookingList = document.getElementById("bookingList");
+            const errorMessage = document.getElementById("errorMessage");
+
+            fetch(`http://localhost:8080/cab/api/bookings/customer/${customerId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch bookings');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message) {
+                    bookingList.innerHTML = `<p>${data.message}</p>`;
+                } else {
+                    allBookings = data;
+                    displayAllBookings();
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                errorMessage.textContent = "Unable to load booking history: " + error.message;
+                errorMessage.style.display = "block";
+                
+                // Display empty state
+                showEmptyState();
+            });
+        }
+
+        // Display all bookings
+        function displayAllBookings() {
+            const bookingList = document.getElementById("bookingList");
+            bookingList.innerHTML = "";
+            
+            if (!allBookings || allBookings.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            allBookings.forEach(booking => {
+                // Determine status based on booking date
+                const bookingDate = new Date(booking.bookingDate || Date.now());
+                const today = new Date();
+                
+                let status = "Completed";
+                let statusClass = "bg-success";
+                
+                if (bookingDate > today) {
+                    status = "Upcoming";
+                    statusClass = "bg-primary";
+                } else if (bookingDate.toDateString() === today.toDateString()) {
+                    status = "Today";
+                    statusClass = "bg-warning";
+                }
+                
+                const bookingItem = document.createElement("div");
+                bookingItem.className = "booking-card";
+                bookingItem.innerHTML = `
+                    <div class="booking-header">
+                        <div>
+                            <h4>Booking #${booking.bookingNumber || "N/A"}</h4>
+                            <div>${bookingDate.toLocaleDateString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}</div>
+                        </div>
+                        <div class="booking-status ${statusClass}">${status}</div>
+                    </div>
+                    
+                    <div class="journey-path">
+                        <div class="location">
+                            <div class="detail-label">From</div>
+                            <div class="detail-value">${booking.startLocation || "N/A"}</div>
+                        </div>
+                        <div class="journey-line"></div>
+                        <div class="location">
+                            <div class="detail-label">To</div>
+                            <div class="detail-value">${booking.stopLocation || "N/A"}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Distance</div>
+                            <div class="detail-value">${booking.kilometers || 0} km</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Total Amount</div>
+                            <div class="detail-value">Rs. ${booking.totalAmount ? booking.totalAmount.toFixed(2) : "0.00"}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Vehicle Type</div>
+                            <div class="detail-value">${booking.car?.modelType || "Standard"}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="driver-info">
+                        <div class="driver-avatar">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div>
+                            <div class="detail-label">Driver</div>
+                            <div class="detail-value">${booking.car?.driver?.name || "Not assigned"}</div>
+                        </div>
+                    </div>
+                `;
+                bookingList.appendChild(bookingItem);
+            });
+        }
+
+        // Show empty state when no bookings found
+        function showEmptyState() {
+            const bookingList = document.getElementById("bookingList");
+            bookingList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-car"></i>
+                    <h3>No Bookings Yet</h3>
+                    <p>You haven't made any bookings yet. Book a ride to get started!</p>
+                </div>
+            `;
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = "login.html";
+        }
+    </script>
 </body>
 </html>

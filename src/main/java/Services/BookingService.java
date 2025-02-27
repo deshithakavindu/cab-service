@@ -66,6 +66,17 @@ public class BookingService {
             return null; // Return null if the booking is not found or there's an error
         }
     }
+    
+    public List<Booking> getBookingsByCustomerId(int customerId) {
+        try (Session session = DatabaseConnection.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Booking WHERE customer.id = :customerId", Booking.class)
+                          .setParameter("customerId", customerId)
+                          .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Return null if there's an error fetching the bookings
+        }
+    }
 
     // Update a booking
     public boolean updateBooking(int id, Booking updatedBooking) {

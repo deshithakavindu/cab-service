@@ -117,7 +117,9 @@
 </head>
 <body>
     <div class="invoice-container">
+        
         <button onclick="window.print()" class="print-button no-print mb-3">Print Invoice</button>
+         <button onclick="downloadPDF()" class="print-button no-print mb-3">Download as PDF</button>
         
         <div class="header">
             <div class="company-name">CAB BOOKING SERVICE</div>
@@ -193,7 +195,11 @@
 
         <div class="footer">
             <p>Thank you for choosing our service!</p>
-            <p>This is a computer-generated invoice and does not require a signature.</p>
+<p>Contact the admin:  
+    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=admin@gmail.com&su=Support Request&body=Hello, I need help with..." target="_blank">
+        admin@gmail.com
+    </a>
+</p>
         </div>
     </div>
 
@@ -229,15 +235,30 @@
                     alert('Error loading booking details');
                 });
         }
+        function downloadPDF() {
+            const invoiceElement = document.getElementById('invoice');
+            html2canvas(invoiceElement, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
 
-        // Get booking ID from URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const bookingId = urlParams.get('id');
+                const imgWidth = 210;
+                const pageHeight = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let position = 10;
 
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                pdf.save(`Invoice_${document.getElementById('bookingId').textContent}.pdf`);
+            });
+        }
+
+
+
+        const bookingId = sessionStorage.getItem('bookingId');
         if (bookingId) {
             loadInvoice(bookingId);
         } else {
-            alert('Booking ID not provided');
+            alert('No booking ID found!');
         }
     </script>
 </body>
