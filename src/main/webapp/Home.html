@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-if (!sessionStorage.getItem("username")) {
-    window.location.href = "login.html";
-}
-</script>
+    <script>
+        if (!sessionStorage.getItem("username")) {
+            window.location.href = "login.html";
+        }
+    </script>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -25,6 +25,7 @@ if (!sessionStorage.getItem("username")) {
             --text-primary: #ffffff;
             --accent-1: #333333;
             --accent-2: #666666;
+            --highlight: #00cc00;
         }
 
         body {
@@ -45,15 +46,14 @@ if (!sessionStorage.getItem("username")) {
         }
 
         header {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 30px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
             position: relative;
             overflow: hidden;
-            max-width: 1200px;
-            margin: 0 auto 30px;
         }
 
         header::before {
@@ -70,7 +70,6 @@ if (!sessionStorage.getItem("username")) {
         header h1 {
             text-align: center;
             letter-spacing: 3px;
-            position: relative;
             margin-bottom: 20px;
             animation: glitchText 5s infinite;
         }
@@ -98,21 +97,19 @@ if (!sessionStorage.getItem("username")) {
             padding: 8px 16px;
             border: 1px solid transparent;
             transition: all 0.3s ease;
-            position: relative;
         }
 
         nav ul li a:hover {
             border-color: white;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        /* New Services Section Styles */
         .services-section {
             max-width: 1200px;
-            margin: 0 auto 40px;
+            margin: 0 auto 60px;
             padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             display: flex;
             flex-wrap: wrap;
@@ -171,7 +168,7 @@ if (!sessionStorage.getItem("username")) {
 
         .services-list li::before {
             content: '✔';
-            color: #00cc00;
+            color: #e9efe9;
             font-size: 1.2em;
         }
 
@@ -188,7 +185,7 @@ if (!sessionStorage.getItem("username")) {
             max-width: 100%;
             height: auto;
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: transform 0.3s ease;
         }
 
@@ -196,9 +193,139 @@ if (!sessionStorage.getItem("username")) {
             transform: scale(1.05);
         }
 
+        .journey-planner {
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            padding: 60px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .planner-bg {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+            animation: rotateBg 20s linear infinite;
+            z-index: 0;
+        }
+
+        .journey-planner h2 {
+            font-size: 2.5em;
+            text-align: center;
+            letter-spacing: 3px;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 2;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #eff6ef, #ffffff);            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textGlow 4s infinite alternate;
+        }
+
+        .planner-container {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            z-index: 1;
+        }
+
+        .planner-node {
+            position: relative;
+            width: 300px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 12px;
+            overflow: hidden;
+            opacity: 0;
+            animation: nodeAppear 0.8s ease-out forwards;
+            animation-delay: var(--node-delay);
+            transition: transform 0.3s ease;
+        }
+
+        .planner-node:hover {
+            transform: translateY(-10px);
+        }
+
+        .node-circle {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 15px;
+            height: 15px;
+            background: #f7faf7;   
+             border-radius: 50%;
+            z-index: 2;
+        }
+
+        .node-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 25px;
+            height: 25px;
+            background: rgba(0, 204, 0, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulseRing 2s infinite;
+        }
+
+        .node-info {
+            padding-left: 30px;
+        }
+
+        .node-info h3 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: #f2f7f2;
+        }
+
+        .node-info p {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .node-info .details {
+            font-size: 0.9em;
+            color: #f2f7f2;
+        }
+
+        .node-info .details span {
+            display: block;
+            margin: 5px 0;
+            color: #f2f7f2;
+        }
+
+        .planner-cta {
+            text-align: center;
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #1f201f, #141514);            color: #ffffff;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+
         main {
             background: var(--bg-secondary);
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             padding: 15px 25px;
             position: fixed;
@@ -211,10 +338,7 @@ if (!sessionStorage.getItem("username")) {
 
         main h2 {
             font-size: 1.2em;
-            position: relative;
-            display: inline-block;
             white-space: nowrap;
-            margin: 0;
         }
 
         main h2::after {
@@ -233,10 +357,8 @@ if (!sessionStorage.getItem("username")) {
         footer {
             text-align: center;
             padding: 20px;
-            margin-top: 30px;
             opacity: 0;
             animation: fadeIn 0.5s ease 2s forwards;
-            position: fixed;
             bottom: 0;
             width: 100%;
             left: 0;
@@ -244,23 +366,13 @@ if (!sessionStorage.getItem("username")) {
         }
 
         @keyframes slideInFromBottom {
-            0% {
-                transform: translate(-50px, 50px);
-                opacity: 0;
-            }
-            100% {
-                transform: translate(0, 0);
-                opacity: 1;
-            }
+            0% { transform: translate(-50px, 50px); opacity: 0; }
+            100% { transform: translate(0, 0); opacity: 1; }
         }
 
         @keyframes expandLine {
-            0% {
-                transform: scaleX(0);
-            }
-            100% {
-                transform: scaleX(1);
-            }
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
         }
 
         @keyframes fadeInPage {
@@ -290,11 +402,47 @@ if (!sessionStorage.getItem("username")) {
             to { opacity: 1; }
         }
 
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes textGlow {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.5); }
+            100% { filter: brightness(1); }
+        }
+
+        @keyframes nodeAppear {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseRing {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .services-section {
                 flex-direction: column;
                 align-items: center;
+            }
+
+            .journey-planner {
+                padding: 40px 10px;
+            }
+
+            .planner-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .planner-node {
+                width: 100%;
+                max-width: 350px;
             }
         }
     </style>
@@ -313,7 +461,6 @@ if (!sessionStorage.getItem("username")) {
             </nav>
         </header>
 
-        <!-- New Services Section -->
         <section class="services-section">
             <div class="services-text">
                 <h2>Why Choose Mega City Cab?</h2>
@@ -325,7 +472,50 @@ if (!sessionStorage.getItem("username")) {
                 </ul>
             </div>
             <div class="services-image">
-                <img src="https://via.placeholder.com/500x300?text=Cab+Service" alt="Mega City Cab">
+                <img src="images/car.jpg" alt="Mega City Cab">
+            </div>
+        </section>
+
+        <section class="journey-planner">
+            <div class="planner-bg"></div>
+            <h2>Plan Your Mega City Journey</h2>
+            <div class="planner-container">
+                <div class="planner-node" style="--node-delay: 0.3s;">
+                    <div class="node-circle"></div>
+                    <div class="node-info">
+                        <h3>Quick Commute</h3>
+                        <p>Suburbs to Downtown</p>
+                        <div class="details">
+                            <span>Distance: 15 km</span>
+                            <span>Time: 20 min</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="planner-node" style="--node-delay: 0.6s;">
+                    <div class="node-circle"></div>
+                    <div class="node-info">
+                        <h3>Airport Dash</h3>
+                        <p>City Center to Airport</p>
+                        <div class="details">
+                            <span>Distance: 25 km</span>
+                            <span>Time: 35 min</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="planner-node" style="--node-delay: 0.9s;">
+                    <div class="node-circle"></div>
+                    <div class="node-info">
+                        <h3>Scenic Loop</h3>
+                        <p>Tour Mega City’s Landmarks</p>
+                        <div class="details">
+                            <span>Distance: 40 km</span>
+                            <span>Time: 1 hr</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="planner-cta">
+                    <a href="Booking.html" class="cta-button">Book Your Journey</a>
+                </div>
             </div>
         </section>
 
@@ -333,9 +523,7 @@ if (!sessionStorage.getItem("username")) {
             <h2>Hello, <span id="username"></span>!</h2>
         </main>
 
-        <footer>
-            <p>© 2025 Cab Booking Service. All Rights Reserved.</p>
-        </footer>
+      
     </div>
 
     <script>
@@ -347,7 +535,7 @@ if (!sessionStorage.getItem("username")) {
         } else {
             window.location.href = "login.html";
         }
-        
+
         document.getElementById("logoutLink").addEventListener("click", function(event) {
             event.preventDefault();
             const confirmLogout = confirm("Do you want to log out?");
@@ -358,5 +546,8 @@ if (!sessionStorage.getItem("username")) {
             }
         });
     </script>
+      <footer>
+            <p>© 2025 Cab Booking Service. All Rights Reserved.</p>
+        </footer>
 </body>
 </html>
