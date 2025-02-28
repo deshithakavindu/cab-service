@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script >
-if (!sessionStorage.getItem("username")) {
-    window.location.href = "login.html";
-}</script>
+    <script>
+        if (!sessionStorage.getItem("username")) {
+            window.location.href = "login.html";
+        }
+    </script>
     <meta charset="UTF-8">
-     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monochrome Admin Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -18,20 +20,20 @@ if (!sessionStorage.getItem("username")) {
             box-sizing: border-box;
         }
        
-       #logoutLink {
-    background-color: #ff4b5c;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+        #logoutLink {
+            background-color: #ff4b5c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-#logoutLink:hover {
-    background-color: #e0434c;
-}
+        #logoutLink:hover {
+            background-color: #e0434c;
+        }
        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,7 +42,6 @@ if (!sessionStorage.getItem("username")) {
             min-height: 100vh;
         }
 
-        /* Sidebar Styles */
         .sidebar {
             width: 280px;
             background: #000000;
@@ -95,7 +96,6 @@ if (!sessionStorage.getItem("username")) {
             background: rgba(255, 255, 255, 0.1);
         }
 
-        /* Main Content */
         .main-content {
             margin-left: 280px;
             flex: 1;
@@ -169,40 +169,35 @@ if (!sessionStorage.getItem("username")) {
             color: #000000;
         }
 
-        .recent-activity {
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
             background: #ffffff;
             padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: 1px solid #e0e0e0;
+            height: 400px;
+            position: relative;
         }
 
-        .recent-activity h3 {
+        .chart-card h3 {
             color: #000000;
-            margin-bottom: 1.5rem;
-            font-weight: 500;
-        }
-
-        .activity-list {
-            list-style: none;
-        }
-
-        .activity-item {
-            padding: 1rem;
-            border-left: 3px solid #000000;
             margin-bottom: 1rem;
-            background: #f8f8f8;
-            border-radius: 0 8px 8px 0;
-            transition: 0.3s;
-            color: #333333;
+            font-weight: 500;
+            text-align: center;
         }
 
-        .activity-item:hover {
-            transform: translateX(5px);
-            background: #f0f0f0;
+        .chart-container {
+            height: 320px;
+            width: 100%;
         }
 
-        /* User Profile */
         .user-profile {
             position: absolute;
             bottom: 2rem;
@@ -239,14 +234,40 @@ if (!sessionStorage.getItem("username")) {
             opacity: 0.7;
         }
 
-        /* Subtle Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .stat-card, .activity-item {
+        .stat-card, .chart-card {
             animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -265,41 +286,170 @@ if (!sessionStorage.getItem("username")) {
                 <h4><span id="username"></span></h4> 
                 <p>Administrator</p>    
                 <button id="logoutLink">Log out</button>
-                
             </div>
         </div>
     </div>
 
- <script>
- 
+    <div class="loading">
+        <div class="spinner"></div>
+    </div>
 
+    <div class="main-content">
+        <div class="header">
+            <h1>Booking Analytics Dashboard</h1>
+            <p>Monitor and analyze your booking data and revenue streams</p>
+        </div>
 
-        // Fetch the username from localStorage
-        const username = sessionStorage.getItem("username");
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Bookings</h3>
+                <div class="stat-value" id="total-bookings">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <div class="stat-value" id="total-revenue">Rs0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Tax Collected</h3>
+                <div class="stat-value" id="total-tax">Rs0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Booking Value</h3>
+                <div class="stat-value" id="avg-booking">Rs0</div>
+            </div>
+        </div>
 
-        if (username) {
-            // Display the username in the 'username' span element
-            document.getElementById("username").textContent = username;
-        } else {
-            // If no username is found in localStorage, redirect to login page
-            window.location.href = "login.html";
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3>Monthly Booking Count</h3>
+                <div class="chart-container">
+                    <canvas id="bookingsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Monthly Tax Earnings</h3>
+                <div class="chart-container">
+                    <canvas id="taxChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "http://localhost:8080/cab/api";
+        let bookings = [];
+
+        // Simple currency formatter for Rs
+        function formatRs(amount) {
+            return "Rs " + Number(amount).toFixed(2);
         }
-        
-        document.getElementById("logoutLink").addEventListener("click", function(event) {
-            event.preventDefault();
 
-            // Confirm logout action
-            const confirmLogout = confirm("Do you want to log out?");
-
-            if (confirmLogout) {
-                // Clear the session (remove the username from localStorage)
+        // Display username and handle logout
+        document.getElementById("username").textContent = sessionStorage.getItem("username") || "User";
+        document.getElementById("logoutLink").onclick = function() {
+            if (confirm("Do you want to log out?")) {
                 sessionStorage.removeItem("username");
-
-                // Redirect to the login page
                 window.location.href = "login.html";
             }
-        });
+        };
+
+        // Load and display data
+        async function loadData() {
+            document.querySelector(".loading").style.display = "flex";
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings/all`);
+                bookings = await response.json();
+            } catch (error) {
+                console.error("Error:", error);
+                bookings = generateMockData(); // Use mock data if API fails
+            }
+            document.querySelector(".loading").style.display = "none";
+            updateDashboard(bookings);
+        }
+
+        // Update all dashboard elements
+        function updateDashboard(data) {
+            // Stats
+            const totalBookings = data.length;
+            const totalRevenue = data.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+            const totalTax = totalRevenue * 0.1; // 10% tax
+            const avgBooking = totalBookings ? totalRevenue / totalBookings : 0;
+
+            document.getElementById("total-bookings").textContent = totalBookings;
+            document.getElementById("total-revenue").textContent = formatRs(totalRevenue);
+            document.getElementById("total-tax").textContent = formatRs(totalTax);
+            document.getElementById("avg-booking").textContent = formatRs(avgBooking);
+
+            // Charts
+            const months = {};
+            data.forEach(booking => {
+                const month = new Date(booking.bookingDate || Date.now()).toLocaleString("default", { month: "short" });
+                months[month] = months[month] || { bookings: 0, tax: 0 };
+                months[month].bookings += 1;
+                months[month].tax += (booking.totalAmount || 0) * 0.1;
+            });
+
+            const labels = Object.keys(months);
+            const bookingCounts = labels.map(m => months[m].bookings);
+            const taxValues = labels.map(m => months[m].tax);
+
+            new Chart(document.getElementById("bookingsChart"), {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Bookings",
+                        data: bookingCounts,
+                        borderColor: "rgba(0, 0, 0, 0.7)",
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            new Chart(document.getElementById("taxChart"), {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Tax (Rs)",
+                        data: taxValues,
+                        borderColor: "rgba(54, 162, 235, 0.7)",
+                        backgroundColor: "rgba(54, 162, 235, 0.2)",
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Mock data if API fails
+        function generateMockData() {
+            const mock = [];
+            for (let i = 1; i <= 20; i++) {
+                mock.push({
+                    bookingNumber: i,
+                    customer: { firstName: "Customer", lastName: i },
+                    startLocation: `Loc ${i % 5}`,
+                    stopLocation: `Dest ${i % 5}`,
+                    totalAmount: Math.random() * 500 + 50,
+                    bookingDate: new Date(Date.now() - Math.random() * 10000000000).toISOString()
+                });
+            }
+            return mock;
+        }
+
+        // Load data on page load
+        window.onload = loadData;
     </script>
-   
 </body>
 </html>

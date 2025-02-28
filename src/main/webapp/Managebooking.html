@@ -1,10 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <script>
+    if (!sessionStorage.getItem("username")) {
+        window.location.href = "login.html";
+    }
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica', sans-serif;
+            background: linear-gradient(45deg, #000 0%, #333 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #fff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            color: #fff;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 24px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+            color: #000;
+            display: block;
+            margin: 0 auto;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74,144,226,0.3);
+        }
+
+        .booking-list {
+            margin-top: 20px;
+        }
+
+        .booking-card {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .booking-card p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .booking-card strong {
+            color: #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Booking Management</h1>
 
+        <!-- All Bookings -->
+        <div class="card">
+            <h2>All Bookings</h2>
+            <div id="allBookingsList" class="booking-list"></div>
+        </div>
+
+        <!-- Delete Booking -->
+        <div class="card">
+            <h2>Delete Booking</h2>
+            <button id="deleteBookingButton">Delete Booking</button>
+        </div>
+    </div>
+
+    <script>
+        const apiBase = 'http://localhost:8080/cab/api/bookings';
+
+        function displayBookings(bookings, targetElement) {
+            targetElement.innerHTML = '';
+            if (bookings && bookings.length) {
+                bookings.forEach(booking => {
+                    const bookingCard = document.createElement('div');
+                    bookingCard.classList.add('booking-card');
+                    bookingCard.innerHTML = `
+                        <p><strong>Booking #:</strong> ${booking.bookingNumber}</p>
+                        <p><strong>Customer:</strong> ${booking.customer.name} (${booking.customer.username})</p>
+                        <p><strong>Car Model:</strong> ${booking.car.modelType} (${booking.car.licensePlateNumber})</p>
+                        <p><strong>Driver:</strong> ${booking.car.driver.name} (License: ${booking.car.driver.licenseNumber})</p>
+                        <p><strong>Start Location:</strong> ${booking.startLocation}</p>
+                        <p><strong>Stop Location:</strong> ${booking.stopLocation}</p>
+                        <p><strong>Kilometers:</strong> ${booking.kilometers}</p>
+                        <p><strong>Rate per Kilometer:</strong> $${booking.ratePerKilometer}</p>
+                        <p><strong>Tax:</strong> $${booking.tax}</p>
+                        <p><strong>Total Amount:</strong> $${booking.totalAmount}</p>
+                        <p><strong>Discount:</strong> $${booking.discount}</p>
+                        <p><strong>Final Amount:</strong> $${booking.finalAmount}</p>
+                    `;
+                    targetElement.appendChild(bookingCard);
+                });
+            } else {
+                targetElement.innerHTML = '<div class="booking-card">No bookings found.</div>';
+            }
+        }
+
+        // Load all bookings on page load
+        async function loadAllBookings() {
+            try {
+                const response = await fetch(`${apiBase}/all`);
+                const data = await response.json();
+                displayBookings(data, document.getElementById('allBookingsList'));
+            } catch (error) {
+                alert('Error fetching bookings: ' + error);
+            }
+        }
+
+        document.getElementById('deleteBookingButton').addEventListener('click', function () {
+            const bookingId = prompt('Enter Booking ID to delete:');
+            if (bookingId) {
+                fetch(`${apiBase}/delete/${bookingId}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message || data.error);
+                        loadAllBookings(); // Refresh the list after deleting
+                    })
+                    .catch(error => alert('Error deleting booking: ' + error));
+            }
+        });
+
+        // Load bookings when page loads
+        window.addEventListener('load', loadAllBookings);
+    </script>
 </body>
 </html>
