@@ -11,41 +11,41 @@ import java.util.List;
 public class BookingService {
 
     // Create a new booking with Hibernate persistence
-	public Booking createBooking(Booking booking) {
-	    if (booking == null || booking.getCustomer() == null || booking.getCar() == null) {
-	        return null;
-	    }
-	    
-	    Transaction transaction = null;
-	    try (Session session = DatabaseConnection.getSessionFactory().openSession()) {
-	        transaction = session.beginTransaction();
-	        
-	        // Load the actual Customer entity from the database
-	        Customer customer = session.get(Customer.class, booking.getCustomer().getId());
-	        if (customer == null) {
-	            throw new Exception("Customer not found");
-	        }
-	        booking.setCustomer(customer);
-	        
-	        // Load the actual Car entity from the database
-	        Car car = session.get(Car.class, booking.getCar().getId());
-	        if (car == null) {
-	            throw new Exception("Car not found");
-	        }
-	        booking.setCar(car);
-	        
-	        // Now save the booking with the loaded entities
-	        session.save(booking);
-	        transaction.commit();
-	        return booking;
-	    } catch (Exception e) {
-	        if (transaction != null) {
-	            transaction.rollback();
-	        }
-	        e.printStackTrace();
-	        return null;
-	    }
-	}
+    public Booking createBooking(Booking booking) {
+        if (booking == null || booking.getCustomer() == null || booking.getCar() == null || booking.getStartDateTime() == null) { // Added startDateTime check
+            return null;
+        }
+        
+        Transaction transaction = null;
+        try (Session session = DatabaseConnection.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            
+            // Load the actual Customer entity from the database
+            Customer customer = session.get(Customer.class, booking.getCustomer().getId());
+            if (customer == null) {
+                throw new Exception("Customer not found");
+            }
+            booking.setCustomer(customer);
+            
+            // Load the actual Car entity from the database
+            Car car = session.get(Car.class, booking.getCar().getId());
+            if (car == null) {
+                throw new Exception("Car not found");
+            }
+            booking.setCar(car);
+            
+            // Now save the booking with the loaded entities
+            session.save(booking);
+            transaction.commit();
+            return booking;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     // Get all bookings
     public List<Booking> getAllBookings() {
@@ -80,8 +80,8 @@ public class BookingService {
 
     // Update a booking
     public boolean updateBooking(int id, Booking updatedBooking) {
-        if (updatedBooking == null) {
-            return false; // Early return if the updatedBooking is null
+        if (updatedBooking == null || updatedBooking.getStartDateTime() == null) { // Added startDateTime check
+            return false; // Early return if the updatedBooking is null or missing startDateTime
         }
 
         Transaction transaction = null;
@@ -96,8 +96,11 @@ public class BookingService {
             // Update fields selectively
             existingBooking.setCustomer(updatedBooking.getCustomer());
             existingBooking.setCar(updatedBooking.getCar());
+            existingBooking.setStartDateTime(updatedBooking.getStartDateTime()); // Added update for startDateTime
             existingBooking.setStartLocation(updatedBooking.getStartLocation());
             existingBooking.setStopLocation(updatedBooking.getStopLocation());
+            existingBooking.setKilometers(updatedBooking.getKilometers()); // Added kilometers update
+            existingBooking.calculateTotalAmount(); // Recalculate amounts after update
 
             session.update(existingBooking);
             transaction.commit();

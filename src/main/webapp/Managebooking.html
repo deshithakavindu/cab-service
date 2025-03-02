@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <script>
-    if (!sessionStorage.getItem("username")) {
-        window.location.href = "login.html";
-    }
+        if (!sessionStorage.getItem("username")) {
+            window.location.href = "login.html";
+        }
     </script>
     
     <meta charset="UTF-8">
@@ -71,8 +71,8 @@
             text-transform: uppercase;
             font-size: 14px;
             color: #000;
-            display: block;
-            margin: 0 auto;
+            display: inline-block;
+            margin: 5px;
         }
 
         button:hover {
@@ -109,6 +109,27 @@
             color: #ddd;
         }
 
+        .button-group {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            text-align: center;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -120,24 +141,33 @@
 
             button {
                 width: 100%;
+                margin: 5px 0;
+            }
+
+            .booking-card {
+                padding: 15px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Booking Management</h1>
+        <h1>Booking Management System</h1>
 
         <!-- All Bookings -->
         <div class="card">
             <h2>All Bookings</h2>
             <div id="allBookingsList" class="booking-list"></div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
         </div>
 
-        <!-- Delete Booking -->
+        <!-- Booking Actions -->
         <div class="card">
-            <h2>Delete Booking</h2>
-            <button id="deleteBookingButton">Delete Booking</button>
+            <h2>Booking Actions</h2>
+            <div class="button-group">
+                <button id="deleteBookingButton">Delete Booking</button>
+                <button id="updateBookingButton">Update Booking</button>
+            </div>
         </div>
     </div>
 
@@ -153,16 +183,23 @@
                     bookingCard.innerHTML = `
                         <p><strong>Booking #:</strong> ${booking.bookingNumber}</p>
                         <p><strong>Customer:</strong> ${booking.customer.name} (${booking.customer.username})</p>
-                        <p><strong>Car Model:</strong> ${booking.car.modelType} (${booking.car.licensePlateNumber})</p>
-                        <p><strong>Driver:</strong> ${booking.car.driver.name} (License: ${booking.car.driver.licenseNumber})</p>
-                        <p><strong>Start Location:</strong> ${booking.startLocation}</p>
-                        <p><strong>Stop Location:</strong> ${booking.stopLocation}</p>
-                        <p><strong>Kilometers:</strong> ${booking.kilometers}</p>
-                        <p><strong>Rate per Kilometer:</strong> $${booking.ratePerKilometer}</p>
-                        <p><strong>Tax:</strong> $${booking.tax}</p>
-                        <p><strong>Total Amount:</strong> $${booking.totalAmount}</p>
-                        <p><strong>Discount:</strong> $${booking.discount}</p>
-                        <p><strong>Final Amount:</strong> $${booking.finalAmount}</p>
+                        <p><strong>Car Model:</strong> ${booking.car.modelType || "N/A"} (${booking.car.licensePlateNumber || "N/A"})</p>
+                        <p><strong>Driver:</strong> ${booking.car.driver?.name || "Not assigned"} (License: ${booking.car.driver?.licenseNumber || "N/A"})</p>
+                        <p><strong>Start Date & Time:</strong> ${booking.startDateTime ? new Date(booking.startDateTime).toLocaleString('en-US', {
+                            dateStyle: 'medium',
+                            timeStyle: 'short'
+                        }) : "N/A"}</p>
+                        <p><strong>Start Location:</strong> ${booking.startLocation || "N/A"}</p>
+                        <p><strong>Stop Location:</strong> ${booking.stopLocation || "N/A"}</p>
+                        <p><strong>Distance:</strong> ${booking.kilometers || 0} km</p>
+                        <p><strong>Rate per Kilometer:</strong> Rs. ${booking.ratePerKilometer || 150}</p>
+                        <p><strong>Tax:</strong> Rs. ${booking.tax ? booking.tax.toFixed(2) : "0.00"}</p>
+                        <p><strong>Total Amount:</strong> Rs. ${booking.totalAmount ? booking.totalAmount.toFixed(2) : "0.00"}</p>
+                        <p><strong>Discount:</strong> Rs. ${booking.discount ? booking.discount.toFixed(2) : "0.00"}</p>
+                        <p><strong>Final Amount:</strong> Rs. ${booking.finalAmount ? booking.finalAmount.toFixed(2) : "0.00"}</p>
+                        <div class="button-group">
+                            <button class="view-invoice-btn" onclick="viewInvoice(${booking.bookingNumber})">View Invoice</button>
+                        </div>
                     `;
                     targetElement.appendChild(bookingCard);
                 });
@@ -173,29 +210,71 @@
 
         // Load all bookings on page load
         async function loadAllBookings() {
+            const errorMessage = document.getElementById('errorMessage');
             try {
                 const response = await fetch(`${apiBase}/all`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch bookings');
+                }
                 const data = await response.json();
                 displayBookings(data, document.getElementById('allBookingsList'));
+                errorMessage.style.display = 'none';
             } catch (error) {
-                alert('Error fetching bookings: ' + error);
+                console.error('Error fetching bookings:', error);
+                errorMessage.textContent = 'Error loading bookings: ' + error.message;
+                errorMessage.style.display = 'block';
             }
         }
 
-        document.getElementById('deleteBookingButton').addEventListener('click', function () {
+        // Delete Booking
+        document.getElementById('deleteBookingButton').addEventListener('click', async function () {
             const bookingId = prompt('Enter Booking ID to delete:');
             if (bookingId) {
-                fetch(`${apiBase}/delete/${bookingId}`, {
-                    method: 'DELETE',
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message || data.error);
-                        loadAllBookings(); // Refresh the list after deleting
-                    })
-                    .catch(error => alert('Error deleting booking: ' + error));
+                try {
+                    const response = await fetch(`${apiBase}/delete/${bookingId}`, {
+                        method: 'DELETE',
+                    });
+                    const data = await response.json();
+                    alert(data.message || data.error || 'Booking deleted successfully');
+                    loadAllBookings(); // Refresh the list after deleting
+                } catch (error) {
+                    alert('Error deleting booking: ' + error.message);
+                }
             }
         });
+
+        // Update Booking
+        document.getElementById('updateBookingButton').addEventListener('click', async function () {
+            const bookingId = prompt('Enter Booking ID to update:');
+            if (bookingId) {
+                const kilometers = prompt('Enter new kilometers:');
+                if (kilometers && !isNaN(kilometers) && parseFloat(kilometers) > 0) {
+                    const updatedBooking = {
+                        kilometers: parseFloat(kilometers)
+                    };
+                    try {
+                        const response = await fetch(`${apiBase}/update/${bookingId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(updatedBooking)
+                        });
+                        const data = await response.json();
+                        alert(data.message || data.error || 'Booking updated successfully');
+                        loadAllBookings(); // Refresh the list after updating
+                    } catch (error) {
+                        alert('Error updating booking: ' + error.message);
+                    }
+                } else {
+                    alert('Please enter a valid number greater than 0 for kilometers.');
+                }
+            }
+        });
+
+        // View Invoice
+        function viewInvoice(bookingId) {
+            sessionStorage.setItem('bookingId', bookingId);
+            window.location.href = 'Invoice.html';
+        }
 
         // Load bookings when page loads
         window.addEventListener('load', loadAllBookings);

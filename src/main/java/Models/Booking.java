@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime; // Added import for LocalDateTime
 
 @Entity
 @Table(name = "booking")
@@ -25,6 +26,9 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "car_id", nullable = false) // Foreign Key to Car table
     private Car car;
+
+    @Column(name = "start_date_time") // Added start date and time field
+    private LocalDateTime startDateTime;
 
     @Column(name = "start_location")
     private String startLocation;
@@ -53,10 +57,11 @@ public class Booking {
     // Default Constructor
     public Booking() {}
 
-    // Parameterized Constructor
-    public Booking(Customer customer, Car car, String startLocation, String stopLocation, double kilometers) {
+    // Parameterized Constructor (updated with startDateTime)
+    public Booking(Customer customer, Car car, LocalDateTime startDateTime, String startLocation, String stopLocation, double kilometers) {
         this.customer = customer;
         this.car = car;
+        this.startDateTime = startDateTime;
         this.startLocation = startLocation;
         this.stopLocation = stopLocation;
         this.kilometers = kilometers;
@@ -85,6 +90,14 @@ public class Booking {
 
     public void setCar(Car car) {
         this.car = car;
+    }
+
+    public LocalDateTime getStartDateTime() { // Added getter for startDateTime
+        return startDateTime;
+    }
+
+    public void setStartDateTime(LocalDateTime startDateTime) { // Added setter for startDateTime
+        this.startDateTime = startDateTime;
     }
 
     public String getStartLocation() {

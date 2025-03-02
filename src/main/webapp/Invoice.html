@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Invoice</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @media print {
             .no-print {
@@ -92,16 +94,17 @@
             border-top: 2px solid #000;
         }
 
-        .print-button {
+        .print-button, .download-button {
             background: #000;
             color: white;
             border: 2px solid #000;
             padding: 0.75rem 1.5rem;
             border-radius: 4px;
             transition: all 0.3s ease;
+            margin-right: 10px;
         }
 
-        .print-button:hover {
+        .print-button:hover, .download-button:hover {
             background: white;
             color: #000;
         }
@@ -113,13 +116,21 @@
             padding-top: 1rem;
             border-top: 1px solid #ddd;
         }
+
+        .error-message {
+            color: #ff4d4d;
+            text-align: center;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
     <div class="invoice-container">
-        
-        <button onclick="window.print()" class="print-button no-print mb-3">Print Invoice</button>
-         <button onclick="downloadPDF()" class="print-button no-print mb-3">Download as PDF</button>
+        <div class="no-print d-flex justify-content-end mb-3">
+            <button onclick="window.print()" class="print-button">Print Invoice</button>
+            <button onclick="downloadPDF()" class="download-button">Download as PDF</button>
+        </div>
         
         <div class="header">
             <div class="company-name">CAB BOOKING SERVICE</div>
@@ -147,6 +158,10 @@
                 <tr>
                     <td><strong>Car:</strong></td>
                     <td id="carDetails"></td>
+                </tr>
+                <tr>
+                    <td><strong>Start Date & Time:</strong></td>
+                    <td id="startDateTime"></td>
                 </tr>
                 <tr>
                     <td><strong>Start Location:</strong></td>
@@ -195,70 +210,92 @@
 
         <div class="footer">
             <p>Thank you for choosing our service!</p>
-<p>Contact the admin:  
-    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=admin@gmail.com&su=Support Request&body=Hello, I need help with..." target="_blank">
-        admin@gmail.com
-    </a>
-</p>
+            <p>Contact the admin:  
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=admin@gmail.com&su=Support Request&body=Hello, I need help with..." target="_blank" style="color: #666;">
+                    admin@gmail.com
+                </a>
+            </p>
         </div>
     </div>
 
+    <div id="errorMessage" class="error-message" style="display: none;"></div>
+
     <script>
         function loadInvoice(bookingId) {
+            const errorMessage = document.getElementById('errorMessage');
             fetch(`http://localhost:8080/cab/api/bookings/${bookingId}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Booking not found or server error');
+                    }
+                    return response.json();
+                })
                 .then(booking => {
                     // Booking details
-                    document.getElementById('bookingId').textContent = booking.id;
-                    document.getElementById('bookingDate').textContent = new Date().toLocaleDateString();
+                    document.getElementById('bookingId').textContent = booking.bookingNumber || "N/A";
+                    document.getElementById('bookingDate').textContent = new Date().toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
                     
                     // Customer details
-                    document.getElementById('customerName').textContent = booking.customer.name;
-                    document.getElementById('customerId').textContent = booking.customer.id;
+                    document.getElementById('customerName').textContent = booking.customer.name || "N/A";
+                    document.getElementById('customerId').textContent = booking.customer.id || "N/A";
                     
                     // Car and journey details
-                    document.getElementById('carDetails').textContent = `${booking.car.modelType} (${booking.car.licensePlateNumber})`;
-                    document.getElementById('startLocation').textContent = booking.startLocation;
-                    document.getElementById('stopLocation').textContent = booking.stopLocation;
-                    document.getElementById('kilometers').textContent = booking.kilometers;
+                    document.getElementById('carDetails').textContent = `${booking.car.modelType || "N/A"} (${booking.car.licensePlateNumber || "N/A"})`;
+                    document.getElementById('startDateTime').textContent = booking.startDateTime ? new Date(booking.startDateTime).toLocaleString('en-US', {
+                        dateStyle: 'medium',
+                        timeStyle: 'short'
+                    }) : "N/A";
+                    document.getElementById('startLocation').textContent = booking.startLocation || "N/A";
+                    document.getElementById('stopLocation').textContent = booking.stopLocation || "N/A";
+                    document.getElementById('kilometers').textContent = booking.kilometers || 0;
                     
                     // Amount calculations
-                    const distanceCharge = booking.kilometers * booking.ratePerKilometer;
+                    const distanceCharge = booking.kilometers * (booking.ratePerKilometer || 150);
                     document.getElementById('distanceCharge').textContent = `Rs. ${distanceCharge.toFixed(2)}`;
-                    document.getElementById('tax').textContent = `Rs. ${booking.tax.toFixed(2)}`;
-                    document.getElementById('totalAmount').textContent = `Rs. ${booking.totalAmount.toFixed(2)}`;
-                    document.getElementById('discount').textContent = `Rs. ${booking.discount.toFixed(2)}`;
-                    document.getElementById('finalAmount').textContent = `Rs. ${booking.finalAmount.toFixed(2)}`;
+                    document.getElementById('tax').textContent = `Rs. ${booking.tax ? booking.tax.toFixed(2) : "0.00"}`;
+                    document.getElementById('totalAmount').textContent = `Rs. ${booking.totalAmount ? booking.totalAmount.toFixed(2) : "0.00"}`;
+                    document.getElementById('discount').textContent = `Rs. ${booking.discount ? booking.discount.toFixed(2) : "0.00"}`;
+                    document.getElementById('finalAmount').textContent = `Rs. ${booking.finalAmount ? booking.finalAmount.toFixed(2) : "0.00"}`;
                 })
                 .catch(error => {
                     console.error('Error loading booking:', error);
-                    alert('Error loading booking details');
+                    errorMessage.textContent = `Error: ${error.message || 'Unable to load invoice details'}`;
+                    errorMessage.style.display = "block";
                 });
         }
+
         function downloadPDF() {
-            const invoiceElement = document.getElementById('invoice');
-            html2canvas(invoiceElement, { scale: 2 }).then(canvas => {
+            const invoiceContainer = document.querySelector('.invoice-container');
+            html2canvas(invoiceContainer, { scale: 2 }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
 
-                const imgWidth = 210;
-                const pageHeight = 297;
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 let position = 10;
 
                 pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                pdf.save(`Invoice_${document.getElementById('bookingId').textContent}.pdf`);
+                pdf.save(`Invoice_${document.getElementById('bookingId').textContent || 'Booking'}.pdf`);
+            }).catch(error => {
+                console.error('PDF generation error:', error);
+                alert('Failed to generate PDF: ' + error.message);
             });
         }
-
-
 
         const bookingId = sessionStorage.getItem('bookingId');
         if (bookingId) {
             loadInvoice(bookingId);
         } else {
-            alert('No booking ID found!');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = 'No booking ID found!';
+            errorMessage.style.display = "block";
         }
     </script>
 </body>

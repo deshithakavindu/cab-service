@@ -9,17 +9,47 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 @Path("/bookings")
-@CrossOrigin(origins = "*")  // Add this for class-level CORS
+@CrossOrigin(origins = "*") // Add this for class-level CORS
 public class BookingController {
 
     private final BookingService bookingService = new BookingService();
     private final CustomerService customerService = new CustomerService();
-    private final Gson gson = new Gson();
+    
+    // Create a Gson instance with a custom adapter for LocalDateTime
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+            .create();
+
+    // Custom TypeAdapter for LocalDateTime
+    private static class LocalDateTimeTypeAdapter extends com.google.gson.TypeAdapter<LocalDateTime> {
+        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        @Override
+        public void write(com.google.gson.stream.JsonWriter out, LocalDateTime value) throws java.io.IOException {
+            if (value != null) {
+                out.value(value.format(formatter));
+            } else {
+                out.nullValue();
+            }
+        }
+
+        @Override
+        public LocalDateTime read(com.google.gson.stream.JsonReader in) throws java.io.IOException {
+            String dateTimeString = in.nextString();
+            if (dateTimeString == null || dateTimeString.trim().isEmpty()) {
+                return null;
+            }
+            return LocalDateTime.parse(dateTimeString, formatter);
+        }
+    }
 
     @POST
     @Path("/create")
@@ -31,10 +61,9 @@ public class BookingController {
             System.out.println("Received booking data: " + jsonBody); // Debug log
             Booking booking = gson.fromJson(jsonBody, Booking.class);
 
-            // First validate the raw JSON data
+            // Validate the raw JSON data
             Map<String, Object> rawData = gson.fromJson(jsonBody, Map.class);
             if (rawData.containsKey("customerId")) {
-                // Convert customerId to the expected format
                 int customerId = ((Double) rawData.get("customerId")).intValue();
                 Customer customer = new Customer();
                 customer.setId(customerId);
@@ -57,10 +86,16 @@ public class BookingController {
             }
             booking.setCustomer(customer);
 
-            // Rest of the validation
+            // Validate other fields
             if (booking.getCar() == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(gson.toJson(Map.of("error", "Car is required")))
+                        .build();
+            }
+
+            if (booking.getStartDateTime() == null) { // Added validation for startDateTime
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(gson.toJson(Map.of("error", "Start date and time are required")))
                         .build();
             }
 
@@ -87,7 +122,7 @@ public class BookingController {
 
             if (createdBooking != null) {
                 return Response.status(Response.Status.CREATED)
-                        .entity(gson.toJson(Map.of("message", "Booking created successfully", 
+                        .entity(gson.toJson(Map.of("message", "Booking created successfully",
                                                  "bookingId", createdBooking.getBookingNumber())))
                         .build();
             } else {
@@ -96,19 +131,18 @@ public class BookingController {
                         .build();
             }
         } catch (JsonSyntaxException e) {
-            e.printStackTrace(); // Add logging
+            e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(gson.toJson(Map.of("error", "Invalid JSON format: " + e.getMessage())))
                     .build();
         } catch (Exception e) {
-            e.printStackTrace(); // Add logging
+            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(gson.toJson(Map.of("error", "Unexpected error: " + e.getMessage())))
                     .build();
         }
     }
 
-    
     @GET
     @Path("/customer/{customerId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -120,7 +154,7 @@ public class BookingController {
                 return Response.ok(gson.toJson(bookings)).build();
             } else if (bookings != null && bookings.isEmpty()) {
                 return Response.status(Response.Status.OK)
-                        .entity(gson.toJson(Map.of("message", "No bookings ")))
+                        .entity(gson.toJson(Map.of("message", "No bookings")))
                         .build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -134,10 +168,7 @@ public class BookingController {
                     .build();
         }
     }
-    
-    
-    
-    
+
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -176,9 +207,9 @@ public class BookingController {
     public Response updateBooking(@PathParam("id") int id, String jsonBody) {
         try {
             Booking updatedBooking = gson.fromJson(jsonBody, Booking.class);
-            if (updatedBooking == null || updatedBooking.getKilometers() <= 0) {
+            if (updatedBooking == null || updatedBooking.getKilometers() <= 0 || updatedBooking.getStartDateTime() == null) { // Added startDateTime check
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(gson.toJson(Map.of("error", "Invalid or incomplete booking details")))
+                        .entity(gson.toJson(Map.of("error", "Invalid or incomplete booking details (start date/time and kilometers are required)")))
                         .build();
             }
 
@@ -194,7 +225,7 @@ public class BookingController {
                         .build();
             }
         } catch (Exception e) {
-            e.printStackTrace(); // Add logging
+            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(gson.toJson(Map.of("error", "Unexpected error: " + e.getMessage())))
                     .build();
