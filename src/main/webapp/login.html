@@ -21,54 +21,43 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
             overflow: hidden;
+            animation: fadeInBackground 2s ease-in-out;
         }
 
         .login-container {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid #fff;
             border-radius: 15px;
-            padding: 40px;
-            width: 100%;
+            padding: 30px;
+            width: 90%;
             max-width: 400px;
             backdrop-filter: blur(10px);
-            transform: perspective(1000px) rotateX(10deg);
-            opacity: 0;
-            animation: fadeInRotate 1s ease-out forwards;
+            text-align: center;
+            animation: popIn 1s ease-out forwards;
         }
 
         h2 {
-            text-align: center;
-            margin-bottom: 30px;
             color: #fff;
             letter-spacing: 2px;
             position: relative;
-            overflow: hidden;
-        }
-
-        h2::before {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #fff;
-            animation: underline 1.5s ease-out forwards;
+            margin-bottom: 20px;
+            animation: slideInTitle 1s ease-in-out;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            text-align: left;
             position: relative;
+            animation: slideUp 0.8s ease-in-out;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #ccc;
-            transform: translateX(20px);
-            opacity: 0;
-            animation: slideInLabel 0.7s ease-out forwards;
+            transition: color 0.3s ease-in-out;
         }
 
         input {
@@ -78,16 +67,34 @@
             background: rgba(0, 0, 0, 0.5);
             color: #fff;
             border-radius: 5px;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideInInput 0.7s ease-out forwards;
+            transition: all 0.3s ease-in-out;
         }
 
         input:focus {
             outline: none;
             border-color: #fff;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #ccc;
+            font-size: 1rem;
+            transition: transform 0.3s ease-in-out, color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #fff;
+            transform: scale(1.2);
         }
 
         button {
@@ -98,95 +105,121 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideInButton 0.7s ease-out forwards;
+            transition: all 0.3s ease-in-out;
+            font-size: 1rem;
+            animation: bounceIn 1s ease-in-out;
         }
 
         button:hover {
             background: #ccc;
             transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
         #responseMessage {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 10px;
             color: #fff;
-            opacity: 0;
-            animation: fadeIn 0.7s ease-out forwards;
+            animation: fadeIn 1s ease-in-out;
         }
 
-        @keyframes fadeInRotate {
+        .contact-admin {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: white;
+            text-align: center;
+            animation: fadeIn 2s ease-in-out;
+        }
+        
+        .contact-admin a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-admin a:hover {
+            text-decoration: underline;
+            color: #ddd;
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInBackground {
+            from {
+                background-color: #000;
+            }
+            to {
+                background: linear-gradient(45deg, #000 0%, #333 100%);
+            }
+        }
+
+        @keyframes popIn {
             from {
                 opacity: 0;
-                transform: perspective(1000px) rotateX(30deg) translateY(50px);
+                transform: scale(0.8);
             }
             to {
                 opacity: 1;
-                transform: perspective(1000px) rotateX(0) translateY(0);
-            }
-        }
-
-        @keyframes underline {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        @keyframes slideInLabel {
-            from {
-                transform: translateX(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideInInput {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInButton {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+                transform: scale(1);
             }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
-        .contact-admin {
-            margin-top: 20px;
-            font-size: 16px;
-            color: white;
-                        justify-content: center;
-            
-             /* Darker text color */
-        }
-        
-        .contact-admin a {
-            color: white; /* Link color */
-            text-decoration: none; /* Remove underline */
+        @keyframes bounceIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
-        .contact-admin a:hover {
-            text-decoration: underline; /* Underline on hover */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInTitle {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            input, button {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+
+            .contact-admin {
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
@@ -198,70 +231,56 @@
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
             </div>
-            <div class="form-group">
+            <div class="form-group password-container">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
+                <span class="toggle-password" onclick="togglePassword()">👁️</span>
             </div>
             <div class="form-group">
                 <button type="submit">Login</button>
             </div>
         </form>
         <div id="responseMessage"></div>
-        <p class="contact-admin">Contact admin:  
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=admin@gmail.com&su=Support Request&body=Hello, I need help with..." target="_blank">
-                admin@gmail.com
-            </a>
+        <p class="contact-admin">Need help?  
+            <a href="mailto:admin@gmail.com?subject=Support Request">Contact Admin</a>
         </p>
     </div>
 
-
     <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById("password");
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        }
+
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
             event.preventDefault();
 
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
-            const loginData = {
-                username: username,
-                password: password
-            };
+            const loginData = { username, password };
 
             try {
                 const response = await fetch("http://localhost:8080/cab/api/customers/login", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(loginData)
                 });
 
                 const result = await response.json();
-                console.log('Login response:', result); // See what we get from backend
-
                 const responseMessage = document.getElementById("responseMessage");
 
                 if (response.ok) {
-                	sessionStorage.setItem("username", result.username);
-                	// Assuming you get the customerId after login
-                if (result.id) {
-                  sessionStorage.setItem("customerId", result.id);
-                      } else {
-                       sessionStorage.removeItem("customerId"); // Remove if not needed
-                 }
-
+                    sessionStorage.setItem("username", result.username);
+                    if (result.id) sessionStorage.setItem("customerId", result.id);
 
                     responseMessage.textContent = result.message;
-                    responseMessage.style.color = "#fff";
                     setTimeout(() => window.location.href = result.redirect, 1500);
                 } else {
                     responseMessage.textContent = result.error;
-                    responseMessage.style.color = "#fff";
                 }
             } catch (error) {
-                const responseMessage = document.getElementById("responseMessage");
-                responseMessage.textContent = "Network error occurred.";
-                responseMessage.style.color = "#fff";
+                document.getElementById("responseMessage").textContent = "Network error occurred.";
             }
         });
     </script>

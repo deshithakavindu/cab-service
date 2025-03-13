@@ -161,13 +161,12 @@ public class BookingControllerTest {
 
     @Test
     public void testCreateBooking_Success() {
-        // Arrange
-        String jsonBody = "{\"customerId\":1,\"car\":{\"id\":1,\"name\":\"Toyota Camry\"},\"startDateTime\":\"2023-01-01T10:00:00\",\"startLocation\":\"City Center\",\"stopLocation\":\"Airport\",\"kilometers\":50}";
+        String jsonBody = "{\"customerId\":1,\"car\":{\"id\":1,"
+        		+ "\"name\":\"Toyota Camry\"},\"startDateTime\":\"2023-01-01T10:00:00\","
+        		+ "\"startLocation\":\"City Center\",\"stopLocation\":\"Airport\",\"kilometers\":50}";
         
-        // Act
         Response response = bookingController.createBooking(jsonBody);
         
-        // Assert
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Booking created successfully"));
     }
@@ -305,7 +304,7 @@ public class BookingControllerTest {
 
     @Test
     public void testGetAllBookings_Success() {
-        // Arrange
+        
         List<Booking> bookings = new ArrayList<>();
         Booking booking1 = new Booking();
         booking1.setBookingNumber(1);
@@ -319,10 +318,8 @@ public class BookingControllerTest {
         
         testBookingService.setAllBookings(bookings);
         
-        // Act
         Response response = bookingController.getAllBookings();
         
-        // Assert
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 

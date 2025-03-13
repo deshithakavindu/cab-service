@@ -17,18 +17,16 @@ import java.util.List;
 import java.util.Map;
 
 @Path("/bookings")
-@CrossOrigin(origins = "*") // Add this for class-level CORS
+@CrossOrigin(origins = "*")
 public class BookingController {
 
     private final BookingService bookingService = new BookingService();
     private final CustomerService customerService = new CustomerService();
     
-    // Create a Gson instance with a custom adapter for LocalDateTime
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
             .create();
 
-    // Custom TypeAdapter for LocalDateTime
     private static class LocalDateTimeTypeAdapter extends com.google.gson.TypeAdapter<LocalDateTime> {
         private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -58,10 +56,8 @@ public class BookingController {
     @CrossOrigin
     public Response createBooking(String jsonBody) {
         try {
-            System.out.println("Received booking data: " + jsonBody); // Debug log
             Booking booking = gson.fromJson(jsonBody, Booking.class);
 
-            // Validate the raw JSON data
             Map<String, Object> rawData = gson.fromJson(jsonBody, Map.class);
             if (rawData.containsKey("customerId")) {
                 int customerId = ((Double) rawData.get("customerId")).intValue();
@@ -70,14 +66,12 @@ public class BookingController {
                 booking.setCustomer(customer);
             }
 
-            // Validate customer
             if (booking.getCustomer() == null || booking.getCustomer().getId() == 0) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(gson.toJson(Map.of("error", "Customer ID is required")))
                         .build();
             }
 
-            // Fetch customer details
             Customer customer = customerService.getCustomerById(booking.getCustomer().getId());
             if (customer == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -86,14 +80,13 @@ public class BookingController {
             }
             booking.setCustomer(customer);
 
-            // Validate other fields
             if (booking.getCar() == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(gson.toJson(Map.of("error", "Car is required")))
                         .build();
             }
 
-            if (booking.getStartDateTime() == null) { // Added validation for startDateTime
+            if (booking.getStartDateTime() == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(gson.toJson(Map.of("error", "Start date and time are required")))
                         .build();
@@ -207,7 +200,7 @@ public class BookingController {
     public Response updateBooking(@PathParam("id") int id, String jsonBody) {
         try {
             Booking updatedBooking = gson.fromJson(jsonBody, Booking.class);
-            if (updatedBooking == null || updatedBooking.getKilometers() <= 0 || updatedBooking.getStartDateTime() == null) { // Added startDateTime check
+            if (updatedBooking == null || updatedBooking.getKilometers() <= 0 || updatedBooking.getStartDateTime() == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(gson.toJson(Map.of("error", "Invalid or incomplete booking details (start date/time and kilometers are required)")))
                         .build();

@@ -1,0 +1,109 @@
+/* css/theme.css */
+:root {
+    /* Dark theme (default) */
+    --bg-gradient: linear-gradient(45deg, #000 0%, #333 100%);
+    --container-bg: rgba(255, 255, 255, 0.1);
+    --container-border: 2px solid #fff;
+    --text-primary: #fff;
+    --text-secondary: #ccc;
+    --input-bg: rgba(0, 0, 0, 0.5);
+    --input-border: 1px solid #555;
+    --input-focus-border: #fff;
+    --input-focus-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    --button-bg: #fff;
+    --button-text: #000;
+    --button-hover-bg: #ccc;
+    --toggle-bg: #333;
+    --toggle-icon: #fff;
+    --bg-primary: #000000;
+    --bg-secondary: #111111;
+    --accent-1: #333333;
+    --accent-2: #666666;
+    --highlight: #00cc00;
+}
+
+.light-theme {
+    /* Light theme overrides */
+    --bg-gradient: linear-gradient(45deg, #f0f0f0 0%, #ffffff 100%);
+    --container-bg: rgba(0, 0, 0, 0.1);
+    --container-border: 2px solid #333;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --input-bg: rgba(255, 255, 255, 0.8);
+    --input-border: 1px solid #ccc;
+    --input-focus-border: #333;
+    --input-focus-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    --button-bg: #333;
+    --button-text: #fff;
+    --button-hover-bg: #555;
+    --toggle-bg: #fff;
+    --toggle-icon: #333;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f0f0f0;
+    --accent-1: #666666;
+    --accent-2: #999999;
+    --highlight: #00cc00;
+}
+
+body {
+    background: var(--bg-gradient);
+    transition: background 0.3s ease;
+    font-family: 'Helvetica', sans-serif;
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    transition: filter 0.3s ease;
+    z-index: 10;
+}
+
+.light-theme .logo {
+    filter: brightness(0.8);
+}
+
+#themeToggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background: var(--toggle-bg);
+    border: 2px solid var(--toggle-bg);
+    border-radius: 50%;
+    color: var(--toggle-icon);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+#themeToggle:hover {
+    background: var(--button-hover-bg);
+    border-color: var(--button-hover-bg);
+}
+
+@media (max-width: 480px) {
+    .logo {
+        width: 40px;
+        height: 40px;
+        top: 10px;
+        left: 10px;
+    }
+
+    #themeToggle {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+}

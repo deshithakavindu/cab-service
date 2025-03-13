@@ -111,13 +111,13 @@ public class AuthControllerTest {
 
     @Test
     public void testRegisterCustomer_Success() {
-        // Arrange
-        String jsonBody = "{\"name\":\"John Doe\",\"username\":\"johndoe\",\"password\":\"Pass@123\",\"nic\":\"123456789012v\",\"address\":\"123 Main St\"}";
         
-        // Act
+        String jsonBody = "{\"name\":\"John Doe\",\"username\":\"johndoe\","
+        		+ "\"password\":\"Pass@123\",\"nic\":\"123456789012v\","
+        		+ "\"address\":\"123 Main St\"}";
+        
         Response response = authController.registerCustomer(jsonBody);
         
-        // Assert
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Customer registered successfully"));
     }
