@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega City Cab - Your Urban Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+
+        :root {
+            --primary: #2a4d69;    /* Deep Ocean Blue */
+            --secondary: #dbba4f;  /* Golden Sand */
+            --background: #f0f4f8; /* Light Cloud */
+            --neutral: #e3e7eb;    /* Pale Mist */
+            --text-dark: #1f2a44;  /* Midnight Slate */
+            --text-light: #a3b1bf; /* Steel Grey */
+            --highlight: #e07a5f;  /* Sunset Coral */
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            width: 100%;
+            padding: 1.5rem 5%;
+            background: linear-gradient(135deg, var(--primary), var(--primary) 70%, var(--secondary));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(31, 42, 68, 0.1);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--background);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--highlight);
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--background);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--highlight);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: var(--highlight);
+            left: 0;
+            bottom: -8px;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .login-btn {
+            background-color: var(--highlight);
+            color: var(--background);
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: var(--secondary);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(224, 122, 95, 0.3);
+        }
+
+        /* Promo Banner */
+        .promo-banner {
+            background: var(--secondary);
+            color: var(--text-dark);
+            text-align: center;
+            padding: 0.7rem 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2000;
+            box-shadow: 0 2px 10px rgba(219, 186, 79, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 6rem 5% 0;
+            background: var(--neutral);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 650px;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            color: var(--highlight);
+            font-weight: 400;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 2.5rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .cta-primary {
+            background-color: var(--highlight);
+            color: var(--background);
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(219, 186, 79, 0.3);
+        }
+
+        .cta-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-secondary:hover {
+            background-color: var(--primary);
+            color: var(--background);
+        }
+
+        .hero-image {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 55%;
+            max-width: 700px;
+            border-radius: 20px 0 0 20px;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+            background-color: var(--background);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--neutral);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(31, 42, 68, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(31, 42, 68, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--highlight);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 5%;
+            background: linear-gradient(to bottom, var(--primary), var(--primary) 80%, var(--background));
+            color: var(--background);
+        }
+
+        .steps-container {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            padding: 2rem;
+            background: rgba(240, 244, 248, 0.1);
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: scale(1.05);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            color: var(--text-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .step h3 {
+            margin-top: 2rem;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .step p {
+            color: var(--text-light);
+        }
+
+        /* App Download */
+        .app-download {
+            padding: 6rem 5%;
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            background: var(--neutral);
+            flex-wrap: wrap;
+        }
+
+        .app-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .app-content h2 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .app-content p {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .download-btn {
+            background: var(--primary);
+            color: var(--background);
+            padding: 0.9rem 2rem;
+            border-radius: 10px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: var(--highlight);
+            transform: translateY(-3px);
+        }
+
+        .app-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .app-image img {
+            max-width: 320px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(31, 42, 68, 0.2);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 5%;
+            background: var(--background);
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: var(--neutral);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(31, 42, 68, 0.05);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(31, 42, 68, 0.1);
+        }
+
+        .testimonial-card::before {
+            content: "“";
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 4rem;
+            color: var(--highlight);
+            opacity: 0.2;
+        }
+
+        .testimonial-content p {
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--highlight);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details h4 {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .user-details p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: var(--background);
+            padding: 4rem 5% 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--background);
+        }
+
+        .footer-logo span {
+            color: var(--secondary);
+        }
+
+        .footer-col p {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .footer-col h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--background);
+            position: relative;
+        }
+
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 2px;
+            background: var(--highlight);
+            left: 0;
+            bottom: -10px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(240, 244, 248, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--background);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: var(--highlight);
+            color: var(--text-dark);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(240, 244, 248, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .animate-card {
+            opacity: 0;
+            animation: slideIn 0.8s ease forwards;
+        }
+
+        .animate-card:nth-child(2) { animation-delay: 0.2s; }
+        .animate-card:nth-child(3) { animation-delay: 0.4s; }
+        .animate-card:nth-child(4) { animation-delay: 0.6s; }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-image {
+                width: 45%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem 3%;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                background: var(--primary);
+                padding: 2rem;
+                transform: translateY(-100%);
+                transition: transform 0.4s ease;
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+            }
+
+            .mobile-toggle {
+                display: block;
+                background: none;
+                border: none;
+                color: var(--background);
+                font-size: 1.8rem;
+                cursor: pointer;
+            }
+
+            .hero {
+                flex-direction: column;
+                padding-top: 100px;
+                text-align: center;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-image {
+                position: static;
+                transform: none;
+                width: 80%;
+                margin-top: 2rem;
+            }
+
+            .cta-buttons {
+                justify-content: center;
+            }
+
+            .app-download {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .download-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="promo-banner">Exclusive Deal: 25% Off Your First Ride! Code: CITY25</div>
+
+    <header class="header">
+        <div class="logo">Mega <span>City Cab</span></div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#app">Mobile App</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+            </ul>
+        </nav>
+        <button class="login-btn" id="openLoginBtn">Login</button>
+        <button class="mobile-toggle" id="mobileToggle">☰</button>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Explore the City with <span>Mega City Cab</span></h1>
+            <p>Elevate your urban journey with premium comfort, unbeatable reliability, and exclusive perks. Your ride, reimagined.</p>
+            <div class="cta-buttons">
+                <button class="cta-primary" onclick="window.location.href='#app'">Get Started</button>
+                <button class="cta-secondary">Discover More</button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="https://via.placeholder.com/700x500" alt="Luxury Cab">
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-title">
+            <h2>What Sets Us Apart</h2>
+            <p>Experience the difference with our curated features for modern travelers.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card animate-card">
+                <div class="feature-icon">✨</div>
+                <h3>Top-Tier Drivers</h3>
+                <p>Handpicked professionals for a safe and stylish ride.</p>
+            </div>
+            <div class="feature-card animate-card">
+                <div class="feature-icon">🚖</div>
+                <h3>Premium Fleet</h3>
+                <p>Luxury vehicles tailored for your comfort.</p>
+            </div>
+            <div class="feature-card animate-card">
+                <div class="feature-icon">💸</div>
+                <h3>Fair Pricing</h3>
+                <p>Clear rates with exclusive member discounts.</p>
+            </div>
+            <div class="feature-card animate-card">
+                <div class="feature-icon">⏰</div>
+                <h3>Punctual Rides</h3>
+                <p>Always on time, or your next ride’s on us.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-title">
+            <h2>Your Journey in 3 Steps</h2>
+            <p>Simple, seamless, and designed for you.</p>
+        </div>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Download</h3>
+                <p>Get our app from your favorite store.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Sign Up</h3>
+                <p>Join and unlock special offers.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Ride</h3>
+                <p>Book and enjoy the ultimate experience.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="app-download" id="app">
+        <div class="app-content">
+            <h2>Get the Mega City Cab App</h2>
+            <p>Unlock premium rides, real-time updates, and exclusive deals with a tap. Your city awaits!</p>
+            <div class="download-buttons">
+                <button class="download-btn">Google Play</button>
+                <button class="download-btn">App Store</button>
+            </div>
+        </div>
+        <div class="app-image">
+            <img src="https://via.placeholder.com/320x540" alt="Mobile App">
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <div class="section-title">
+            <h2>Our Riders Love Us</h2>
+            <p>Hear from those who’ve made the switch.</p>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"A game-changer for city travel – stylish and reliable!"</p>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/50" alt="User">
+                        </div>
+                        <div class="user-details">
+                            <h4>Sarah Lee</h4>
+                            <p>Urban Adventurer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"Best value and service I’ve found – highly recommend!"</p>
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/50" alt="User">
+                        </div>
+                        <div class="user-details">
+                            <h4>Mike Patel</h4>
+                            <p>Daily Commuter</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="footer-logo">Mega <span>City Cab</span></div>
+                <p>Redefining urban travel with style and ease.</p>
+                <div class="social-links">
+                    <a href="#" class="social-icon">F</a>
+                    <a href="#" class="social-icon">T</a>
+                    <a href="#" class="social-icon">I</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Explore</h3>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#app">Mobile App</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact</h3>
+                <ul class="footer-links">
+                    <li><a href="mailto:support@megacitycab.com">support@megacitycab.com</a></li>
+                    <li><a href="tel:+1234567890">+1 (234) 567-890</a></li>
+                    <li><a href="#" id="contactAdminBtn">Contact Admin</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Mega City Cab. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.querySelector('.nav-links');
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileToggle.textContent = navLinks.classList.contains('active') ? '×' : '☰';
+        });
+
+        // Login redirect
+        const openLoginBtn = document.getElementById('openLoginBtn');
+        openLoginBtn.addEventListener('click', () => {
+            window.location.href = 'login.html';
+        });
+
+        // Contact Admin
+        const contactAdminBtn = document.getElementById('contactAdminBtn');
+        contactAdminBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const subject = encodeURIComponent('Support Request - Mega City Cab');
+            const body = encodeURIComponent('Dear Admin,\n\nI need help with:\n\nBest,\n[Your Name]');
+            window.location.href = `mailto:admin@megacitycab.com?subject=${subject}&body=${body}`;
+        });
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-card');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.feature-card').forEach(card => observer.observe(card));
+    </script>
+</body>
+</html>
